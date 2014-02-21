@@ -13,6 +13,8 @@ from everpad.pad.share_note import ShareNoteDialog
 from everpad.basetypes import Resource, Note
 from dbus.exceptions import DBusException
 import dbus
+import logging
+import os
 
 
 class Editor(QMainWindow):  # TODO: kill this god shit
@@ -20,6 +22,17 @@ class Editor(QMainWindow):  # TODO: kill this god shit
 
     def __init__(self, note, *args, **kwargs):
         QMainWindow.__init__(self, *args, **kwargs)
+        # Configure logger.
+        self.logger = logging.getLogger('everpad-editor')
+        self.logger.setLevel(logging.DEBUG)
+        fh = logging.FileHandler(
+            os.path.expanduser('~/.everpad/logs/everpad.log'))
+        fh.setLevel(logging.DEBUG)
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
+        self.logger.addHandler(fh)
+
         self.app = QApplication.instance()
         self.note = note
         self.closed = False
@@ -141,15 +154,18 @@ class Editor(QMainWindow):  # TODO: kill this god shit
         self.pin.setChecked(self.note.pinnded)
 
     def load_note(self, note):
+        self.logger.debug('Loading note: "%s"' % note.title)
         self.resource_edit.resources = map(Resource.from_tuple,
             self.app.provider.get_note_resources(note.id),
         )
         self.notebook_edit.notebook = note.notebook
         self.note_edit.title = note.title
+        self.logger.debug('Note content: "%s"' % note.content)
         self.note_edit.content = note.content
         self.tag_edit.tags = note.tags
 
     def update_note(self):
+        self.logger.debug('Updating note: "%s"' % self.note_edit.title)
         self.note.notebook = self.notebook_edit.notebook
         self.note.title = self.note_edit.title
         self.note.content = self.note_edit.content
@@ -167,7 +183,7 @@ class Editor(QMainWindow):  # TODO: kill this god shit
     def update_title(self):
         title = self.note_edit.title
         if self.note.conflict_parent:
-            title += self.tr(' altrentive of: %s') % (
+            title += self.tr(' alternative of: %s') % (
                 Note.from_tuple(self.app.provider.get_note(
                     self.note.conflict_parent,
                 )).title,
@@ -176,11 +192,12 @@ class Editor(QMainWindow):  # TODO: kill this god shit
 
     @Slot()
     def save(self):
+        self.logger.debug('Saving note: "%s"' % self.note.title)
         self.mark_untouched()
         self.update_note()
         self.app.provider.update_note(self.note.struct)
         self.app.provider.update_note_resources(
-            self.note.struct, dbus.Array(map(lambda res:
+            self.note.id, dbus.Array(map(lambda res:
                 res.struct, self.resource_edit.resources,
             ), signature=Resource.signature),
         )

@@ -1,14 +1,29 @@
 from setuptools import setup, find_packages
-import sys, os
+import os
 
-version = '2.5'
+version = '2.6'
+requirements = [
+    "BeautifulSoup",
+    "html2text",
+    "httplib2",
+    "keyring",
+    "py-oauth2 ",
+    "pysqlite ",
+    "regex",
+    "sqlalchemy",
+]
+if not 'TRAVIS_CI' in os.environ:
+    requirements.append('PySide')
 
-setup(name='everpad',
+
+setup(
+    name='everpad',
     version=version,
     description="Ubuntu integrated evernote client",
-    long_description="""\
-""",
-    classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    long_description=open('README.rst').read(),
+    classifiers=[
+        'Programming Language :: Python',
+    ],
     keywords='ubuntu python evernote',
     author='Vladimir Yakovlev',
     author_email='nvbn.rm@gmail.com',
@@ -17,7 +32,7 @@ setup(name='everpad',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     include_package_data=True,
     zip_safe=True,
-    install_requires=[],
+    install_requires=requirements,
     entry_points={
         'gui_scripts': [
             'everpad=everpad.pad.indicator:main'
@@ -63,9 +78,13 @@ setup(name='everpad',
         ('share/everpad/i18n/', [
             'i18n/ru_RU.qm',
             'i18n/ar_EG.qm',
-    	    'i18n/zh_CN.qm',
+            'i18n/zh_CN.qm',
             'i18n/zh_TW.qm',
             'i18n/ja.qm',
+            'i18n/es.qm',
+            'i18n/de_DE.qm',
+            'i18n/de_AT.qm',
+            'i18n/de_CH.qm',
         ]),
         ('share/everpad/', [
             'everpad/pad/editor/editor.html',
@@ -73,8 +92,10 @@ setup(name='everpad',
         ('share/locale/ru/LC_MESSAGES', ['i18n/ru/LC_MESSAGES/everpad.mo']),
         ('share/locale/ar/LC_MESSAGES', ['i18n/ar/LC_MESSAGES/everpad.mo']),
         ('share/locale/zh_CN/LC_MESSAGES', ['i18n/zh_CN/LC_MESSAGES/everpad.mo']),
-    	('share/locale/zh_TW/LC_MESSAGES', ['i18n/zh_TW/LC_MESSAGES/everpad.mo']),
+        ('share/locale/zh_TW/LC_MESSAGES', ['i18n/zh_TW/LC_MESSAGES/everpad.mo']),
         ('share/locale/ja/LC_MESSAGES', ['i18n/ja/LC_MESSAGES/everpad.mo']),
+        ('share/locale/es/LC_MESSAGES', ['i18n/es/LC_MESSAGES/everpad.mo']),
+        ('share/locale/de/LC_MESSAGES', ['i18n/de/LC_MESSAGES/everpad.mo']),
         ('share/unity/lenses/everpad', ['data/everpad.lens']),
         ('share/dbus-1/services', [
             'data/unity-lens-everpad.service',
