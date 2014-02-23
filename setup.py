@@ -1,17 +1,8 @@
 from setuptools import setup, find_packages
 import os
 
-version = '2.6'
-requirements = [
-    "BeautifulSoup",
-    "html2text",
-    "httplib2",
-    "keyring",
-    "py-oauth2 ",
-    "pysqlite ",
-    "regex",
-    "sqlalchemy",
-]
+version = '2.6.1'
+requirements = []
 if not 'TRAVIS_CI' in os.environ:
     requirements.append('PySide')
 
